@@ -15,4 +15,4 @@ This is a Python program that solves the 8 puzzle using various search algorithm
 1. Prerequisites: Python 3.x installed.
 2. Setup: Save the script as main.py.
 3. Execution:
-<pre> printpython3 main.py </pre>
+<pre> python3 main.py </pre>
