@@ -1,7 +1,7 @@
 # Project 1, The Eight Puzzle
 This is a Python program that solves the 8 puzzle using various search algorithms.
 
-##Features
+#Features
 - Solving the project using the following search algoritms:
   - Uniform Cost Search
     A* Search with heuristic $h(n)$ is hardcoded to zero
