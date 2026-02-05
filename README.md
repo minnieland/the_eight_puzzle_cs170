@@ -10,3 +10,9 @@ This is a Python program that solves the 8 puzzle using various search algorithm
     A search that counts how many tiles are in the wrong position.
   - Manhattan Distance Heuristic
     A search based on the sum of the distances of the tiles from their goal positions.
+
+## How to run
+Prerequisites: Python 3.x installed.
+Setup: Save the script as main.py.
+Execution:
+python3 main.py
