@@ -12,7 +12,7 @@ This is a Python program that solves the 8 puzzle using various search algorithm
     A search based on the sum of the distances of the tiles from their goal positions.
 
 ## How to run
-Prerequisites: Python 3.x installed.
-Setup: Save the script as main.py.
-Execution:
-python3 main.py
+1. Prerequisites: Python 3.x installed.
+2. Setup: Save the script as main.py.
+3. Execution:
+<pre> printpython3 main.py </pre>
