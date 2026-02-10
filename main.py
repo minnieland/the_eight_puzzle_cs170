@@ -66,6 +66,20 @@ def main():
 if __name__ == "__main__":
     main()
     
+#puzzles to test already embedded in the system
+def default_puzzle_mode():
+    difficulty_level= input("Select the difficulty level from 0-3" + '\n')
+    if difficulty_level=="0":
+        print("difficulty [easy] selected")
+        return easy
+    if difficulty_level=="1":
+        print("difficulty [medium] selected")
+        return medium
+    if difficulty_level=="3":
+        print("difficulty [hard] selected")
+        return hard
+        
+
 #create child nodes (all possible next moves from curr node)
 def expand(node, problem):
     children=[]
