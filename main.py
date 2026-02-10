@@ -1,12 +1,35 @@
-import heapq as min_heap_esque_queue#for A*
+import heapq as min_heap_esque_queue #for A*
 
 #test cases from the slides
-depth_zero = [[1,2,3],
-                    [4,5,6],
-                    [7,8,0]]
+#depth_zero / intital state
+easy =        [[1,2,3],
+               [4,5,6],
+               [7,8,0]]
+
+#depth_2 
+medium =    [[1,2,3],
+            [4,5,6],
+            [0,7,8]]
+
+#depth_4 
+hard =      [[1,2,3],
+            [5,0,6],
+            [4,7,8]]
+
 eight_goal_state = [[1,2,3],
                     [4,5,6],
                     [7,8,0]]
+
+#problem
+# solution = uniform_search(easy)
+
+#moves
+moves = {
+    'U':(-1,0),
+    'D':(1,0),
+    'R':(0,1),
+    'L':(0,-1)
+}
 
 #represents the state of the puzzle, lower cost in priority queue
 class Node:
@@ -20,6 +43,15 @@ class Node:
         def __lt__(self,other):
             return self.cost < other.cost
         
+#goal test   
+def __init__(self,initial_state):
+    self.initial_state=initial_state
+    self.goal_state=eight_goal_state 
+        
+def goal_test(self, state):
+    return state == self.goal_state
+
+
 def main():
     puzzle_mode= input("Welcome to the 8 puzzle! Select '1' for a default puzzle. Select '2' to create your own." 
                        + '\n')
@@ -67,5 +99,10 @@ def general_search(problem, queue_function):
             return node
         children=expand(node,problem)
         nodes=queue_function.insert_all(nodes,children)
+        
+#a*
+def uniform_search(start_state):
+    open_list = []
+    
         
         
