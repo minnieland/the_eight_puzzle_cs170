@@ -1,4 +1,5 @@
-import heapq as min_heap_esque_queue #for A*
+import heapq 
+# as min_heap_esque_queue #for A*
 
 #test cases from the slides
 #depth_zero / intital state
@@ -33,15 +34,19 @@ moves = {
 
 #represents the state of the puzzle, lower cost in priority queue
 class Node:
-    def __init__(self,state,parent=None, action=None, cost=0):
-        self.state=state,
+    def __init__(self,state,parent=None, action=None, cost=0, depth=0, heuristic=0):
+        self.state=state
         self.parent=parent,
         self.action=action,
-        #depth?
-        self.cost=cost
+        self.cost=cost, #g(n)
+        self.heuristic=heuristic, #h(n)
+        self.depth=depth
+        
+        def f(self):
+            return self.cost + self.heuristic
         
         def __lt__(self,other):
-            return self.cost < other.cost
+            return self.f() < other.f()
         
 #goal test   
 def __init__(self,initial_state):
@@ -88,26 +93,30 @@ def choose_algorithm(puzzle):
                      "[2] Misplaced Tile Heuristic\n"
                      "[3] Manhattan Distance Heuristic\n"
                     )
-    # if algorithm == "1":
-    #     uniform_search(puzzle,0)
-    # if algorithm == "2":
-    #     uniform_search(puzzle,1)
-    # if algorithm == "3":
-    #     uniform_search(puzzle,2)
+    if algorithm == "1":
+        a_star(puzzle,0)
+    if algorithm == "2":
+        a_star(puzzle,1)
+    if algorithm == "3":
+        a_star(puzzle,2)
     
 
 #create child nodes (all possible next moves from curr node)
-def expand(node, problem):
+def expand(node, problem, heuristic_fn=None):
     children=[]
-    for action, next_state, step_cost in problem.succesors(node.state):
+    for action, next_state, step_cost in problem.successors(node.state):
+        h = heuristic_fn(next_state) if heuristic_fn else 0
         child = Node(
             state=next_state,
             parent=node,
             action=action,
-            cost=node.cost + step_cost #total cost
-        )
+            cost=node.cost + step_cost, #total cost
+            heuristic=h,
+            depth=node.depth+1
+            
+            )
         children.append(child)
-        return children
+    return children
 
 #print puzzle in 3x3 form
 def print_puzzle(puzzle):
@@ -136,8 +145,44 @@ def general_search(problem, queue_function):
         nodes=queue_function.insert_all(nodes,children)
         
 #a*
-def uniform_search(start_state):
-    open_list = []
+def a_star(problem, heuristic_fn=None):
+    open_queue= []
+    
+    h= heuristic_fn(problem.initial_state) if heuristic_fn else 0
+    
+    start_node = Node(
+        state=problem.initial_state,
+        parent=None,
+        action=None,
+        cost=0,
+        heuristic=h,
+        depth=0
+    )
+
+    heapq.heappush(open_queue,start_node)
+    visited= set()
+    node_expanded=0
+    max_queue_size=0
+    
+    while open_queue:
+        max_queue_size=max(max_queue_size, len(open_queue))
+        current = heapq.heappop(open_queue)
+        
+        #goal test
+        if problem.is_goal(current.state):
+            print("Number of nodes expanded: ", node_expanded)
+            print("Max queue size: ",max_queue_size)
+            return current
+        
+        visited.add(tuple(current.state))
+        
+        #use the expand function
+        for child in expand(current,problem,heuristic_fn):
+            if tuple(child.state) not in visited:
+                heapq.heappush(open_queue,child)
+                
+        node_expanded+=1
+    return None
     
         
         
