@@ -56,7 +56,7 @@ def main():
     puzzle_mode= input("Welcome to the 8 puzzle! Select '1' for a default puzzle. Select '2' to create your own." 
                        + '\n')
     if puzzle_mode == '1':
-        # do smt
+        choose_algorithm(default_puzzle_mode())
         # select...
     # if puzzle_mode == '2':
         #do tmr
@@ -80,6 +80,22 @@ def default_puzzle_mode():
         return hard
         
 
+#bfs depending on which prio queue you want
+#computing prio = g(n) + h(n)
+def choose_algorithm(puzzle):
+    algorithm= input("Select an algorithm:\n"
+                     "[1] Uniform Cost\n"
+                     "[2] Misplaced Tile Heuristic\n"
+                     "[3] Manhattan Distance Heuristic\n"
+                    )
+    # if algorithm == "1":
+    #     uniform_search(puzzle,0)
+    # if algorithm == "2":
+    #     uniform_search(puzzle,1)
+    # if algorithm == "3":
+    #     uniform_search(puzzle,2)
+    
+
 #create child nodes (all possible next moves from curr node)
 def expand(node, problem):
     children=[]
@@ -93,6 +109,11 @@ def expand(node, problem):
         children.append(child)
         return children
 
+#print puzzle in 3x3 form
+def print_puzzle(puzzle):
+    for i in range(0, 3):
+        print(puzzle[i])
+    print('\n')
 
 # driver
 def general_search(problem, queue_function):
