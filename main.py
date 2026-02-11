@@ -30,17 +30,17 @@ eight_goal_state = [[1,2,3],
 class Node:
     def __init__(self,state,parent=None, action=None, cost=0, depth=0, heuristic=0):
         self.state=state
-        self.parent=parent,
-        self.action=action,
-        self.cost=cost, #g(n)
-        self.heuristic=heuristic, #h(n)
+        self.parent=parent
+        self.action=action
+        self.cost=cost #g(n)
+        self.heuristic=heuristic #h(n)
         self.depth=depth
         
-        def f(self):
-            return self.cost + self.heuristic
+    def f(self):
+        return self.cost + self.heuristic
         
-        def __lt__(self,other):
-            return self.f() < other.f()
+    def __lt__(self,other):
+        return self.f() < other.f()
         
 class Eight_Puzzle:
         
@@ -55,10 +55,11 @@ class Eight_Puzzle:
     def successors(self,state):
         successors=[]
     
-        zero_index = state.index(0)
-        row = zero_index // 3
-        col=zero_index % 3
-    
+        for r in range(3):
+            for c in range(3):
+                if state[r][c] == 0:
+                    zero_row, zero_col = r, c
+                    break
         #moves
         moves = {
             'U':(-1,0),
@@ -68,17 +69,34 @@ class Eight_Puzzle:
         }
     
         for action, (dr,dc) in moves.items():
-            new_row=row+dr
-            new_col=col+dc
+            new_row=zero_row+dr
+            new_col=zero_col+dc
             if 0<= new_row < 3 and 0 <= new_col < 3:
-                new_index=new_row*3 + new_col
-                new_state=state.copy()
+                new_state=[row.copy() for row in state]
+                # new_state=state.copy()
                 
-                new_state[zero_index],new_state[new_index]=\
-                    new_state[new_index],new_state[zero_index]
-                
+                new_state[zero_row][zero_col],new_state[new_row][new_col]=\
+                    new_state[new_row][new_col],new_state[zero_row][zero_col]
+                #step cost = 1
                 successors.append((action,new_state,1))     
         return successors   
+
+#create child nodes (all possible next moves from curr node)
+def expand(node, problem, heuristic_fn=None):
+    children=[]
+    for action, next_state, step_cost in problem.successors(node.state):
+        h = heuristic_fn(next_state) if heuristic_fn else 0
+        child = Node(
+            state=next_state,
+            parent=node,
+            action=action,
+            cost=node.cost + step_cost, #total cost
+            heuristic=h,
+            depth=node.depth+1
+            
+            )
+        children.append(child)
+    return children
 
 #a*
 def a_star(problem, heuristic_fn=None):
@@ -108,31 +126,37 @@ def a_star(problem, heuristic_fn=None):
         if problem.is_goal(current.state):
             print("Number of nodes expanded: ", node_expanded)
             print("Max queue size: ",max_queue_size)
+            print("Depth of solution:",current.depth)
             return current
         
-        visited.add(tuple(current.state))
+        current_tuple = tuple(tuple(row) for row in current.state)
+        visited.add(current_tuple)
         
         #use the expand function
         for child in expand(current,problem,heuristic_fn):
-            if tuple(child.state) not in visited:
-                heapq.heappush(open_queue,child)
-                
+            child_tuple=tuple(tuple(row) for row in child.state)
+            if child_tuple not in visited:
+                heapq.heappush(open_queue,child)        
         node_expanded+=1
+        
     return None
     
     
 #puzzles to test already embedded in the system
 def default_puzzle_mode():
-    difficulty_level= input("Select the difficulty level from 0-3" + '\n')
+    difficulty_level= input("Select the difficulty level from 0-2" + '\n')
     if difficulty_level=="0":
-        print("difficulty [easy] selected")
+        print("difficulty [easy] selected" + "\n")
         return easy
-    if difficulty_level=="1":
-        print("difficulty [medium] selected")
+    elif difficulty_level=="1":
+        print("difficulty [medium] selected"+ "\n")
         return medium
-    if difficulty_level=="3":
-        print("difficulty [hard] selected")
+    elif difficulty_level=="2":
+        print("difficulty [hard] selected"+ "\n")
         return hard
+    else: 
+        print("Difficulty not availiable."+ "\n")
+        return None
         
 
 
@@ -190,24 +214,6 @@ def main():
 if __name__ == "__main__":
     main()
     
-    
-#create child nodes (all possible next moves from curr node)
-def expand(node, problem, heuristic_fn=None):
-    children=[]
-    for action, next_state, step_cost in problem.successors(node.state):
-        h = heuristic_fn(next_state) if heuristic_fn else 0
-        child = Node(
-            state=next_state,
-            parent=node,
-            action=action,
-            cost=node.cost + step_cost, #total cost
-            heuristic=h,
-            depth=node.depth+1
-            
-            )
-        children.append(child)
-    return children
-
 #print puzzle in 3x3 form
 def print_puzzle(puzzle):
     for i in range(0, 3):
