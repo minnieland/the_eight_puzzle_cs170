@@ -57,20 +57,6 @@ def goal_test(self, state):
     return state == self.goal_state
 
 
-def main():
-    puzzle_mode= input("Welcome to the 8 puzzle! Select '1' for a default puzzle. Select '2' to create your own." 
-                       + '\n')
-    if puzzle_mode == '1':
-        choose_algorithm(default_puzzle_mode())
-        # select...
-    # if puzzle_mode == '2':
-        #do tmr
-    
-        return
-
-if __name__ == "__main__":
-    main()
-    
 #puzzles to test already embedded in the system
 def default_puzzle_mode():
     difficulty_level= input("Select the difficulty level from 0-3" + '\n')
@@ -84,6 +70,7 @@ def default_puzzle_mode():
         print("difficulty [hard] selected")
         return hard
         
+
 
 #bfs depending on which prio queue you want
 #computing prio = g(n) + h(n)
@@ -101,6 +88,38 @@ def choose_algorithm(puzzle):
         a_star(puzzle,2)
     
 
+def main():
+    puzzle_mode= input("Welcome to the 8 puzzle! Select '1' for a default puzzle. Select '2' to create your own." 
+                       + '\n')
+    if puzzle_mode == '1':
+        choose_algorithm(default_puzzle_mode())
+        # select...
+    if puzzle_mode == '2':
+        print("Enter your custom puzzle, using zero to represent the blank." +
+              "Please only enter whole numbers from 0-8. Add a space in between the numbers." +
+              "Press ENTER when done.")
+        puzzle_first_row=input("Enter the first row: ")
+        puzzle_second_row=input("Enter the second row: ")
+        puzzle_third_row=input("Enter the third row: ")
+        
+        puzzle_first_row=puzzle_first_row.split()
+        puzzle_second_row=puzzle_second_row.split()
+        puzzle_third_row=puzzle_third_row.split()
+        
+        for i in range(0,3):
+            puzzle_first_row[i]=int(puzzle_first_row[i])
+            puzzle_second_row[i]=int(puzzle_second_row[i])
+            puzzle_third_row[i]=int(puzzle_third_row[i])
+            
+        user_puzzle=[puzzle_first_row,puzzle_second_row,puzzle_third_row]
+        choose_algorithm(user_puzzle)
+    return
+
+
+if __name__ == "__main__":
+    main()
+    
+    
 #create child nodes (all possible next moves from curr node)
 def expand(node, problem, heuristic_fn=None):
     children=[]
