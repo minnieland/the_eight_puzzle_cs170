@@ -24,13 +24,7 @@ eight_goal_state = [[1,2,3],
 #problem
 # solution = uniform_search(easy)
 
-#moves
-moves = {
-    'U':(-1,0),
-    'D':(1,0),
-    'R':(0,1),
-    'L':(0,-1)
-}
+
 
 #represents the state of the puzzle, lower cost in priority queue
 class Node:
@@ -48,15 +42,85 @@ class Node:
         def __lt__(self,other):
             return self.f() < other.f()
         
-#goal test   
-def __init__(self,initial_state):
-    self.initial_state=initial_state
-    self.goal_state=eight_goal_state 
+class Eight_Puzzle:
         
-def goal_test(self, state):
-    return state == self.goal_state
+#goal test   
+    def __init__(self,initial_state):
+        self.initial_state=initial_state
+        self.goal_state=eight_goal_state 
+        
+    def is_goal(self, state):
+        return state == self.goal_state
+    
+    def successors(self,state):
+        successors=[]
+    
+        zero_index = state.index(0)
+        row = zero_index // 3
+        col=zero_index % 3
+    
+        #moves
+        moves = {
+            'U':(-1,0),
+            'D':(1,0),
+            'R':(0,1),
+            'L':(0,-1)
+        }
+    
+        for action, (dr,dc) in moves.items():
+            new_row=row+dr
+            new_col=col+dc
+            if 0<= new_row < 3 and 0 <= new_col < 3:
+                new_index=new_row*3 + new_col
+                new_state=state.copy()
+                
+                new_state[zero_index],new_state[new_index]=\
+                    new_state[new_index],new_state[zero_index]
+                
+                successors.append((action,new_state,1))     
+        return successors   
 
+#a*
+def a_star(problem, heuristic_fn=None):
+    open_queue= []
+    
+    h= heuristic_fn(problem.initial_state) if heuristic_fn else 0
+    
+    start_node = Node(
+        state=problem.initial_state,
+        parent=None,
+        action=None,
+        cost=0,
+        heuristic=h,
+        depth=0
+    )
 
+    heapq.heappush(open_queue,start_node)
+    visited= set()
+    node_expanded=0
+    max_queue_size=0
+    
+    while open_queue:
+        max_queue_size=max(max_queue_size, len(open_queue))
+        current = heapq.heappop(open_queue)
+        
+        #goal test, see if you reached it
+        if problem.is_goal(current.state):
+            print("Number of nodes expanded: ", node_expanded)
+            print("Max queue size: ",max_queue_size)
+            return current
+        
+        visited.add(tuple(current.state))
+        
+        #use the expand function
+        for child in expand(current,problem,heuristic_fn):
+            if tuple(child.state) not in visited:
+                heapq.heappush(open_queue,child)
+                
+        node_expanded+=1
+    return None
+    
+    
 #puzzles to test already embedded in the system
 def default_puzzle_mode():
     difficulty_level= input("Select the difficulty level from 0-3" + '\n')
@@ -74,25 +138,32 @@ def default_puzzle_mode():
 
 #bfs depending on which prio queue you want
 #computing prio = g(n) + h(n)
-def choose_algorithm(puzzle):
+def choose_algorithm(problem):
+    
     algorithm= input("Select an algorithm:\n"
                      "[1] Uniform Cost\n"
                      "[2] Misplaced Tile Heuristic\n"
                      "[3] Manhattan Distance Heuristic\n"
                     )
     if algorithm == "1":
-        a_star(puzzle,0)
-    if algorithm == "2":
-        a_star(puzzle,1)
-    if algorithm == "3":
-        a_star(puzzle,2)
-    
+        a_star(problem,None)
+    elif algorithm == "2":
+        a_star(problem,misplaced_tile)
+    elif algorithm == "3":
+        a_star(problem,manhattan_distance)
+    else:
+        print("Invalid choice.")
+
 
 def main():
     puzzle_mode= input("Welcome to the 8 puzzle! Select '1' for a default puzzle. Select '2' to create your own." 
                        + '\n')
     if puzzle_mode == '1':
-        choose_algorithm(default_puzzle_mode())
+        # choose_algorithm(default_puzzle_mode())
+        puzzle_list=default_puzzle_mode()
+        problem=Eight_Puzzle(puzzle_list)
+        choose_algorithm(problem)
+        
         # select...
     if puzzle_mode == '2':
         print("Enter your custom puzzle, using zero to represent the blank." +
@@ -163,45 +234,5 @@ def general_search(problem, queue_function):
         children=expand(node,problem)
         nodes=queue_function.insert_all(nodes,children)
         
-#a*
-def a_star(problem, heuristic_fn=None):
-    open_queue= []
-    
-    h= heuristic_fn(problem.initial_state) if heuristic_fn else 0
-    
-    start_node = Node(
-        state=problem.initial_state,
-        parent=None,
-        action=None,
-        cost=0,
-        heuristic=h,
-        depth=0
-    )
-
-    heapq.heappush(open_queue,start_node)
-    visited= set()
-    node_expanded=0
-    max_queue_size=0
-    
-    while open_queue:
-        max_queue_size=max(max_queue_size, len(open_queue))
-        current = heapq.heappop(open_queue)
-        
-        #goal test
-        if problem.is_goal(current.state):
-            print("Number of nodes expanded: ", node_expanded)
-            print("Max queue size: ",max_queue_size)
-            return current
-        
-        visited.add(tuple(current.state))
-        
-        #use the expand function
-        for child in expand(current,problem,heuristic_fn):
-            if tuple(child.state) not in visited:
-                heapq.heappush(open_queue,child)
-                
-        node_expanded+=1
-    return None
-    
         
         
