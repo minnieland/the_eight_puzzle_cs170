@@ -1,5 +1,5 @@
 import heapq 
-# as min_heap_esque_queue #for A*
+#for A*
 
 #test cases from the slides, 2d list
 #depth_zero / intital state
@@ -20,9 +20,6 @@ hard =      [[1,2,3],
 eight_goal_state = [[1,2,3],
                     [4,5,6],
                     [7,8,0]]
-
-#problem
-# solution = uniform_search(easy)
 
 
 
@@ -98,6 +95,28 @@ def expand(node, problem, heuristic_fn=None):
         children.append(child)
     return children
 
+#how far away is each tile
+def manhattan_distance(state):
+    distance=0
+    
+    #make goal postitions from eight_goal_state
+    goal_positions={}
+    for row in range(3):
+        for column in range(3):
+            tile=eight_goal_state[row][column]
+            goal_positions[tile]=(row,column)
+            
+    #calc manhattan
+    for row in range(3):
+        for column in range(3):
+            tile=state[row][column]
+            if tile !=0:
+                goal_row,goal_column=goal_positions[tile]
+                #equation
+                distance+=abs(row-goal_row)+abs(column-goal_column)
+    return distance
+
+#counts how many tiles are wrong
 def misplaced_tile(state):
     goal= eight_goal_state
     misplaced=0
@@ -134,9 +153,9 @@ def a_star(problem, heuristic_fn=None):
         
         #goal test, see if you reached it
         if problem.is_goal(current.state):
-            print("Number of nodes expanded: ", node_expanded)
-            print("Max queue size: ",max_queue_size)
-            print("Depth of solution:",current.depth)
+            print("Number of nodes expanded:", node_expanded)
+            print("Max queue size:",max_queue_size)
+            print("Depth of solution:",current.depth) #not needed but easier for testing
             return current
         
         current_tuple = tuple(tuple(row) for row in current.state)
