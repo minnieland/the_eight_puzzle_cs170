@@ -1,7 +1,7 @@
 import heapq 
 # as min_heap_esque_queue #for A*
 
-#test cases from the slides
+#test cases from the slides, 2d list
 #depth_zero / intital state
 easy =        [[1,2,3],
                [4,5,6],
@@ -163,7 +163,6 @@ def default_puzzle_mode():
 #bfs depending on which prio queue you want
 #computing prio = g(n) + h(n)
 def choose_algorithm(problem):
-    
     algorithm= input("Select an algorithm:\n"
                      "[1] Uniform Cost\n"
                      "[2] Misplaced Tile Heuristic\n"
@@ -177,6 +176,13 @@ def choose_algorithm(problem):
         a_star(problem,manhattan_distance)
     else:
         print("Invalid choice.")
+        return
+
+#print puzzle in 3x3 form
+def print_puzzle(puzzle):
+    for i in range(0, 3):
+        print(puzzle[i])
+    print('\n')
 
 
 def main():
@@ -185,6 +191,9 @@ def main():
     if puzzle_mode == '1':
         # choose_algorithm(default_puzzle_mode())
         puzzle_list=default_puzzle_mode()
+        
+        print_puzzle(puzzle_list)
+        
         problem=Eight_Puzzle(puzzle_list)
         choose_algorithm(problem)
         
@@ -193,6 +202,7 @@ def main():
         print("Enter your custom puzzle, using zero to represent the blank." +
               "Please only enter whole numbers from 0-8. Add a space in between the numbers." +
               "Press ENTER when done.")
+        
         puzzle_first_row=input("Enter the first row: ")
         puzzle_second_row=input("Enter the second row: ")
         puzzle_third_row=input("Enter the third row: ")
@@ -205,20 +215,19 @@ def main():
             puzzle_first_row[i]=int(puzzle_first_row[i])
             puzzle_second_row[i]=int(puzzle_second_row[i])
             puzzle_third_row[i]=int(puzzle_third_row[i])
-            
+        
+        #tuple
         user_puzzle=[puzzle_first_row,puzzle_second_row,puzzle_third_row]
-        choose_algorithm(user_puzzle)
+        print_puzzle(user_puzzle)
+        problem=Eight_Puzzle(user_puzzle)
+        choose_algorithm(problem)
+        
     return
 
 
 if __name__ == "__main__":
     main()
     
-#print puzzle in 3x3 form
-def print_puzzle(puzzle):
-    for i in range(0, 3):
-        print(puzzle[i])
-    print('\n')
 
 # driver
 def general_search(problem, queue_function):
