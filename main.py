@@ -98,6 +98,16 @@ def expand(node, problem, heuristic_fn=None):
         children.append(child)
     return children
 
+def misplaced_tile(state):
+    goal= eight_goal_state
+    misplaced=0
+    
+    for row in range(3):
+        for column in range(3):
+            if state[row][column] != 0 and state[row][column] != goal[row][column]:
+                misplaced +=1
+        return misplaced
+
 #a*
 def a_star(problem, heuristic_fn=None):
     open_queue= []
@@ -223,7 +233,6 @@ def main():
         choose_algorithm(problem)
         
     return
-
 
 if __name__ == "__main__":
     main()
