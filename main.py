@@ -106,7 +106,7 @@ def expand(node, problem, heuristic_fn=None):
     return children
 
 # driver
-def general_search(problem, queue_function):
+def general_search(problem, queue_function,trace_output=False):
     #starting node from starting state
     initial_node=Node(
         state=problem.initial_state,
@@ -137,6 +137,12 @@ def general_search(problem, queue_function):
         if node_tuple in visited: continue
         #skip if state is visited already
         visited.add(node_tuple)
+        
+        if trace_output:
+            print("The best state to expand with g(n)=",node.cost, "and h(n)", node.heuristic, "is...")
+            for row in node.state: 
+                print(row)
+            print()
         
         #check if we reached goal state
         if problem.is_goal(node.state):
@@ -203,50 +209,6 @@ def misplaced_tile(state):
             if state[row][column] != 0 and state[row][column] != goal[row][column]:
                 misplaced +=1
     return misplaced
-
-#a*
-# def a_star(problem, heuristic_fn=None):
-    open_queue= [] #priorty queue
-    #calculate heursitic, if there isnt any, set it to zero / uniform cost
-    h= heuristic_fn(problem.initial_state) if heuristic_fn else 0
-    #make a start node
-    start_node = Node(
-        state=problem.initial_state,
-        parent=None,
-        action=None,
-        cost=0,
-        heuristic=h,
-        depth=0
-    )
-    #start node goes into prio queue
-    heapq.heappush(open_queue,start_node)
-    visited= set()  #set of explored
-    node_expanded=0
-    max_queue_size=0
-    
-    while open_queue:
-        max_queue_size=max(max_queue_size, len(open_queue))
-        current = heapq.heappop(open_queue) #get node with lowkey f(n) cost
-        
-        #goal test, see if you reached it
-        if problem.is_goal(current.state):
-            print("Number of nodes expanded:", node_expanded)
-            print("Max queue size:",max_queue_size)
-            print("Depth of solution:",current.depth) #not needed but easier for testing
-            return current
-        #curr state is marked visited
-        current_tuple = tuple(tuple(row) for row in current.state)
-        visited.add(current_tuple)
-        
-        #use the expand function on curr node, children are added to queue
-        for child in expand(current,problem,heuristic_fn):
-            child_tuple=tuple(tuple(row) for row in child.state)
-            if child_tuple not in visited:
-                heapq.heappush(open_queue,child)        
-        node_expanded+=1
-        
-    return "No solution is found."
-    
     
 #puzzles to test already embedded in the system
 def default_puzzle_mode():
@@ -276,13 +238,13 @@ def choose_algorithm(problem):
                     )
     if algorithm == "1":
         # a_star(problem,None)
-        general_search(problem,uniform_cost)
+        general_search(problem,uniform_cost, trace_output=True)
     elif algorithm == "2":
         # a_star(problem,misplaced_tile)
-        general_search(problem,a_star_queue(misplaced_tile))
+        general_search(problem,a_star_queue(misplaced_tile),trace_output=True)
     elif algorithm == "3":
         # a_star(problem,manhattan_distance)
-        general_search(problem,a_star_queue(manhattan_distance))
+        general_search(problem,a_star_queue(manhattan_distance),trace_output=True)
     else:
         print("Invalid choice.")
         return
