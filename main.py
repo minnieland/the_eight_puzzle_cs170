@@ -107,23 +107,52 @@ def expand(node, problem, heuristic_fn=None):
 
 # driver
 def general_search(problem, queue_function):
-    nodes= queue_function.make_queue(Node(problem.initial_state))
-    # explored
-    best_cost={}
+    initial_node=Node(
+        state=problem.initial_state,
+        parent=None,
+        action=None,
+        cost=0,
+        depth=0,
+        heuristic=0
+    )    
+    nodes= [initial_node]
+    nodes=queue_function(nodes,None,problem)
+    
+    nodes_expanded = 0
+    max_queue_size=1
+    visited = set()
     
     while True:
-        if queue_function.is_empty(nodes):
+        if not nodes:
             return "Failed. There are no nodes"
-        node= queue_function.remove_front(nodes)
         
-        if node.state in best_cost and best_cost[node.state] <= node.cost:
-            continue
-        best_cost[node.state] = node.cost
+        max_queue_size=max(max_queue_size,len(nodes))
+        node=nodes.pop(0)
         
-        if problem.goal_test(node.state):
+        #curr state is marked visited
+        node_tuple = tuple(tuple(row) for row in node.state)
+        visited.add(node_tuple)
+        
+        if problem.is_goal(node.state):
+            print("Numbers of nodes expanded:", nodes_expanded)
+            print("Max queue size:", max_queue_size)
+            print("Depth of solution:", node.depth)
             return node
-        children=expand(node,problem)
-        nodes=queue_function.insert_all(nodes,children)
+            
+        nodes=queue_function(nodes, node, problem)
+        nodes_expanded+=1
+
+def a_star_queue(heuristic_fn):
+    def queue_function(nodes,node,problem):
+        if node is None:
+            nodes[0].heuristic=heuristic_fn(nodes[0].state)
+            return nodes
+        children=expand(node,problem,heuristic_fn)
+        nodes.extend(children)
+        nodes.sort(key=lambda n:n.f())
+        
+        return nodes
+    return queue_function
         
         
 def uniform_cost(nodes,node,problem):
