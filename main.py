@@ -107,6 +107,7 @@ def expand(node, problem, heuristic_fn=None):
 
 # driver
 def general_search(problem, queue_function):
+    #starting node from starting state
     initial_node=Node(
         state=problem.initial_state,
         parent=None,
@@ -115,6 +116,7 @@ def general_search(problem, queue_function):
         depth=0,
         heuristic=0
     )    
+    #queue is initiated with starting node
     nodes= [initial_node]
     nodes=queue_function(nodes,None,problem)
     
@@ -123,22 +125,26 @@ def general_search(problem, queue_function):
     visited = set()
     
     while True:
+        #if empty nodes, no solution found
         if not nodes:
             return "Failed. There are no nodes"
         
         max_queue_size=max(max_queue_size,len(nodes))
-        node=nodes.pop(0)
+        node=nodes.pop(0) #pop the first node from queue as its sorted by highest prio
         
         #curr state is marked visited
         node_tuple = tuple(tuple(row) for row in node.state)
+        if node_tuple in visited: continue
+        #skip if state is visited already
         visited.add(node_tuple)
         
+        #check if we reached goal state
         if problem.is_goal(node.state):
             print("Numbers of nodes expanded:", nodes_expanded)
             print("Max queue size:", max_queue_size)
             print("Depth of solution:", node.depth)
             return node
-            
+        #expand current node and all children     
         nodes=queue_function(nodes, node, problem)
         nodes_expanded+=1
 
