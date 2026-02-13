@@ -69,9 +69,9 @@ class Eight_Puzzle:
         }
     
         #try all moves possible
-        for action, (dr,dc) in moves.items():
-            new_row=zero_row+dr
-            new_col=zero_col+dc
+        for move, (row_change,col_change) in moves.items():
+            new_row=zero_row+row_change
+            new_col=zero_col+col_change
             
             #make sure new position is in bounds
             if 0<= new_row < 3 and 0 <= new_col < 3:
@@ -81,7 +81,7 @@ class Eight_Puzzle:
                 new_state[zero_row][zero_col],new_state[new_row][new_col]=\
                     new_state[new_row][new_col],new_state[zero_row][zero_col]
                 #step cost = 1, add to sucessory list 
-                successors.append((action,new_state,1))   
+                successors.append((move,new_state,1))   
                   
         return successors   
 
@@ -144,7 +144,7 @@ def general_search(problem, queue_function):
             print("Max queue size:", max_queue_size)
             print("Depth of solution:", node.depth)
             return node
-        #expand current node and all children     
+        #expand current node and all children    
         nodes=queue_function(nodes, node, problem)
         nodes_expanded+=1
 
