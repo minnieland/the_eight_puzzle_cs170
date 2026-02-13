@@ -105,6 +105,36 @@ def expand(node, problem, heuristic_fn=None):
         children.append(child)
     return children
 
+# driver
+def general_search(problem, queue_function):
+    nodes= queue_function.make_queue(Node(problem.initial_state))
+    # explored
+    best_cost={}
+    
+    while True:
+        if queue_function.is_empty(nodes):
+            return "Failed. There are no nodes"
+        node= queue_function.remove_front(nodes)
+        
+        if node.state in best_cost and best_cost[node.state] <= node.cost:
+            continue
+        best_cost[node.state] = node.cost
+        
+        if problem.goal_test(node.state):
+            return node
+        children=expand(node,problem)
+        nodes=queue_function.insert_all(nodes,children)
+        
+        
+def uniform_cost(nodes,node,problem):
+    if node is None:
+        return nodes
+    children = expand(node, problem, heuristic_fn=None)
+    
+    nodes.extend(children)
+    nodes.sort(key=lambda n: n.cost)
+    return nodes
+
 #how far away is each tile from its goal pos (sum)
 def manhattan_distance(state):
     distance=0
@@ -140,7 +170,7 @@ def misplaced_tile(state):
     return misplaced
 
 #a*
-def a_star(problem, heuristic_fn=None):
+# def a_star(problem, heuristic_fn=None):
     open_queue= [] #priorty queue
     #calculate heursitic, if there isnt any, set it to zero / uniform cost
     h= heuristic_fn(problem.initial_state) if heuristic_fn else 0
@@ -210,11 +240,14 @@ def choose_algorithm(problem):
                      "[3] Manhattan Distance Heuristic\n"
                     )
     if algorithm == "1":
-        a_star(problem,None)
+        # a_star(problem,None)
+        general_search(problem,uniform_cost)
     elif algorithm == "2":
-        a_star(problem,misplaced_tile)
+        # a_star(problem,misplaced_tile)
+        general_search(problem,a_star_queue(misplaced_tile))
     elif algorithm == "3":
-        a_star(problem,manhattan_distance)
+        # a_star(problem,manhattan_distance)
+        general_search(problem,a_star_queue(manhattan_distance))
     else:
         print("Invalid choice.")
         return
@@ -271,25 +304,5 @@ if __name__ == "__main__":
     main()
     
 
-# driver
-def general_search(problem, queue_function):
-    nodes= queue_function.make_queue(Node(problem.initial_state))
-    # explored
-    best_cost={}
-    
-    while True:
-        if queue_function.is_empty(nodes):
-            return "Failed. There are no nodes"
-        node= queue_function.remove_front(nodes)
-        
-        if node.state in best_cost and best_cost[node.state] <= node.cost:
-            continue
-        best_cost[node.state] = node.cost
-        
-        if problem.goal_test(node.state):
-            return node
-        children=expand(node,problem)
-        nodes=queue_function.insert_all(nodes,children)
-        
         
         
